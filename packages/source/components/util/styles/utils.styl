@@ -1,0 +1,790 @@
+--ns-defaults = {
+    namespace: 'default'
+};
+
+--ns-current ?= { 'current': --ns-defaults.namespace };
+
+set-ns-current(-ns-current) {
+    --ns-current['current'] = -ns-current;
+}
+
+get-ns-current(-maybe-ns-current) {
+    -ns-current = -maybe-ns-current;
+    if -ns-current == '' {
+        -ns-current = --ns-current['current'];
+    }
+    if -ns-current == '' {
+        -ns-current = --ns-defaults.namespace;
+    }
+    return -ns-current;
+}
+
+// -----------------------------------------------------------------------------
+//
+// global values
+//
+// -----------------------------------------------------------------------------
+
+support-current-color ?= false;
+
+// -longhand-defaults ?= {};
+//
+// -longhand-defaults['border'] = -longhand-defaults['border'] || {
+//     color: support-current-color ? currentColor : black,
+//     style: none,
+//     width: medium
+// };
+//
+// -longhand-defaults['background'] = -longhand-defaults['background'] || {
+//     color: transparent,
+//     image: none,
+//     position: repeat,
+//     size: auto auto,
+//     repeat: repeat,
+//     attachment: scroll,
+//     origin: padding-box,
+//     clip: border-box
+// };
+//
+// property-custom ?= {};
+//
+// property-custom['border'] = property-custom['border'] || {
+//     color: black,
+//     style: solid,
+//     width: 1px
+// };
+
+// -----------------------------------------------------------------------------
+//
+// Functions
+//
+// -----------------------------------------------------------------------------
+
+// -every(list, value) {
+//     for val in list {
+//         if val != value {
+//             return false;
+//         }
+//     }
+//     return true;
+// }
+
+// -----------------------------------------------------------------------------
+// normalize(flatten) args
+// -----------------------------------------------------------------------------
+
+// -normalize-args(list) {
+//     if list-separator(list) == ',' {
+//         comma = null, null;
+//         for item, index in list {
+//             comma[index] = -normalize-args(item);
+//         }
+//         return comma;
+//     } else {
+//         tuple = ();
+//         flatten = @(args) {
+//             len = length(args);
+//             if len == 1 {
+//                 push(tuple, args);
+//             } else if len > 1 {
+//                 for argv in args {
+//                     flatten(argv);
+//                 }
+//             }
+//         };
+//         flatten(list);
+//
+//         if tuple[-1] is important {
+//             if tuple[-2] is \! {
+//                 pop(tuple);
+//                 tuple[-1] = !important;
+//             }
+//         }
+//         return tuple;
+//     }
+// }
+
+// -----------------------------------------------------------------------------
+// general value checkers
+// -----------------------------------------------------------------------------
+
+// -is-color(_) {
+//     if type(_) in ('rgba' 'hsla') {
+//         return true;
+//     }
+//     if _ == transparent {
+//         return true;
+//     }
+//     if _ == currentColor {
+//         return true;
+//     }
+//     return false;
+// }
+
+// -----------------------------------------------------------------------------
+// background value checkers
+// -----------------------------------------------------------------------------
+
+// -is-background-image(_) {
+//     if _ == none {
+//         return true;
+//     }
+//     if type(_) == 'call' {
+//         return true;
+//     }
+//     return false;
+// }
+
+// -is-background-position(_) {
+//     if _ in (left center right top bottom) {
+//         return true;
+//     }
+//     if type(_) == 'unit' {
+//         return true;
+//     }
+//     return false;
+// }
+//
+// -is-background-size(_) {
+//     if _ in (auto cover contain) {
+//         return true;
+//     }
+//     if type(_) == 'unit' {
+//         return true;
+//     }
+// }
+//
+// -is-background-repeat(_) {
+//     if _ in (repeat-x repeat-y repeat no-repeat space round) {
+//         return true;
+//     }
+//     return false;
+// }
+//
+// -is-background-attachment(_) {
+//     if _ in (scroll fixed local) {
+//         return true;
+//     }
+//     return false;
+// }
+//
+// -is-background-box(_) {
+//     if _ in (border-box padding-box content-box) {
+//         return true;
+//     }
+//     return false;
+// }
+
+// -----------------------------------------------------------------------------
+// border value checkers
+// -----------------------------------------------------------------------------
+
+// -is-border-color = -is-color;
+//
+// -is-border-style(_) {
+//     return _ in (none hidden dotted dashed solid double groove ridge inset outset);
+// }
+//
+// -is-border-width(_) {
+//     if type(_) == 'unit' {
+//         return true;
+//     }
+//     if _ in (thin medium thick) {
+//         return true;
+//     }
+//     return false;
+// }
+
+// -----------------------------------------------------------------------------
+// around shorthand values (top right bottom left)
+// -----------------------------------------------------------------------------
+
+// -around-values(args) {
+//     _ = { important: false, top: 0, right: 0, bottom: 0, left: 0 };
+//     args = -normalize-args(args);
+//
+//     if args[ -1 ] == !important {
+//         _.important = true;
+//         pop(args);
+//     }
+//
+//     length = length(args);
+//
+//     if length == 4 {
+//         _.top    = args[ 0 ];
+//         _.right  = args[ 1 ];
+//         _.bottom = args[ 2 ];
+//         _.left   = args[ 3 ];
+//         return _;
+//     }
+//
+//     if length == 3 {
+//         _.top    = args[ 0 ];
+//         _.right  = args[ 1 ];
+//         _.bottom = args[ 2 ];
+//         _.left   = args[ 1 ];
+//         return _;
+//     }
+//
+//     if length == 2 {
+//         _.top    = args[ 0 ];
+//         _.right  = args[ 1 ];
+//         _.bottom = args[ 0 ];
+//         _.left   = args[ 1 ];
+//         return _;
+//     }
+//
+//     _.top    = args[ 0 ];
+//     _.right  = args[ 0 ];
+//     _.bottom = args[ 0 ];
+//     _.left   = args[ 0 ];
+//
+//     return _;
+// }
+
+// -----------------------------------------------------------------------------
+// border shorthand values (border-color border-style border-width)
+// -----------------------------------------------------------------------------
+
+// -border-values(args) {
+//     _ = {
+//         important: false,
+//         inherit: false,
+//         initial: false,
+//         color: property-custom.border.color || -longhand-defaults.border.color,
+//         style: property-custom.border.style || -longhand-defaults.border.style,
+//         width: property-custom.border.width || -longhand-defaults.border.width
+//     };
+//     args = -normalize-args(args);
+//
+//     if args[ -1 ] == !important {
+//         _.important = true;
+//         pop(args);
+//     }
+//
+//     if length(args) == 1 {
+//         if args in (inherit initial) {
+//             if args == inherit {
+//                 _.inherit = true;
+//             } else if args == initial {
+//                 _.initial = true;
+//             }
+//             return _;
+//         }
+//     }
+//
+//     for argv in args {
+//         if -is-border-style(argv) {
+//             _.style = argv;
+//         } else if -is-border-color(argv) {
+//             _.color = argv;
+//         } else if -is-border-width(argv) {
+//             _.width = argv;
+//         }
+//     }
+//
+//     return _;
+// }
+
+// -----------------------------------------------------------------------------
+// background shorthand values (color image position size repeat attachment origin clip)
+// -----------------------------------------------------------------------------
+
+// -background-values(args) {
+//     _ = { important: false, color: transparent, layers: (), length: 0 };
+//     is-multiple = list-separator(args) == ',';
+//     args = -normalize-args(args);
+//     fin  = is-multiple ? args[ -1 ] : args;
+//     if fin[ -1 ] == !important {
+//         _.important = true;
+//         pop(fin);
+//     }
+//
+//     not-found = true;
+//     for argv in fin {
+//         if not-found {
+//             if -is-color(argv) {
+//                 _.color = argv;
+//                 not-found = false;
+//             }
+//         }
+//     }
+//
+//     if is-multiple {
+//         for argv in args {
+//             push(_.layers, -background-layer(argv));
+//             _.length = _.length + 1;
+//         }
+//     } else {
+//         push(_.layers, -background-layer(args));
+//         _.length = 1;
+//     }
+//
+//     return _;
+// }
+//
+// -background-layer(args) {
+//     _ = { image: null, position: (), size: (), repeat: (), attachment: null, origin: null, clip: null };
+//     unit-phase = 'position';
+//     box-phase  = 'origin';
+//
+//     for argv in args {
+//         if argv == \/ {
+//             unit-phase = 'size';
+//         } else {
+//             if type(argv) == 'unit' {
+//                 if unit-phase == 'position' {
+//                     push(_.position, argv);
+//                 } else if unit-phase == 'size' {
+//                     push(_.size, argv);
+//                 }
+//             } else if type(argv) =='ident' {
+//                 if -is-background-image(argv) {
+//                     _.image = argv;
+//                 } else if -is-background-position(argv) {
+//                     push(_.position, argv);
+//                 } else if -is-background-size(argv) {
+//                     push(_.size, argv);
+//                 } else if -is-background-repeat(argv) {
+//                     push(_.repeat, argv);
+//                 } else if -is-background-attachment(argv) {
+//                     _.attachment = argv;
+//                 } else if -is-background-box(argv) {
+//                     if box-phase == 'origin' {
+//                         _.origin = argv;
+//                     } else {
+//                         _.clip = argv;
+//                     }
+//                 }
+//             } else if type(argv) == 'function' and argv == round {
+//                 push(_.repeat, argv);
+//             } else if type(argv) == 'call' {
+//                 _.image = argv;
+//             } else if type(argv) == 'literal' {
+//                 if match('^literal\s+url\(\s*"?data:', -string(v)) or match("^literal\s+url\(\s*'?data:", -string(v)) {
+//                     _.image = argv;
+//                 }
+//             }
+//         }
+//     }
+//
+//     if type(_.image) == 'null' {
+//         _.image = none;
+//     }
+//
+//     if type(_.position) == 'null' {
+//         _.position = 0% 0%;
+//     } else if length(_.position) == 1 {
+//         push(_.position, (type(_.position) == 'unit' ? 50% : center));
+//     }
+//
+//     if type(_.size) == 'null' {
+//         _.size = auto auto;
+//     } else if length(_.size) == 1 {
+//         if _.size == auto {
+//             push(_.size, auto);
+//         }
+//     }
+//
+//     if type(_.repeat) == 'null' {
+//         _.repeat = repeat;
+//     }
+//
+//     if type(_.attachment) == 'null' {
+//         _.attachment = scroll;
+//     }
+//
+//     if type(_.origin) == 'ident' {
+//         if type(_.clip) == 'null' {
+//             _.clip = _.origin;
+//         }
+//     }
+//     if type(_.origin) == 'null' {
+//         _.origin = padding-box;
+//     }
+//     if type(_.clip) == 'null' {
+//         _.clip = border-box;
+//     }
+//
+//     return _;
+// }
+
+// -----------------------------------------------------------------------------
+// Microsoft ARGB
+// -----------------------------------------------------------------------------
+
+hex(decimal) {
+    hex-value = ('0') ('1') ('2') ('3') ('4') ('5') ('6') ('7') ('8') ('9') ('A') ('B') ('C') ('D') ('E') ('F')
+    unquote(hex-value[ floor(decimal / 16) ] + hex-value[ floor(decimal % 16) ]);
+}
+
+argb(color, alpha = 1) {
+    unquote('#') + hex(alpha * 255) + hex(red(color)) + hex(green(color)) + hex(blue(color))
+}
+
+// -----------------------------------------------------------------------------
+//
+// Mixins
+//
+// -----------------------------------------------------------------------------
+
+// -----------------------------------------------------------------------------
+// around shorthand to longhand
+// -----------------------------------------------------------------------------
+
+// -around-longhand(property, args, postfix = '') {
+//     _ = -around-values(args);
+//     if postfix != '' {
+//         postfix = '-' + postfix;
+//     }
+//     if _.important {
+//         { property + '-top'    + postfix }: _.top    unquote('!important');
+//         { property + '-right'  + postfix }: _.right  unquote('!important');
+//         { property + '-bottom' + postfix }: _.bottom unquote('!important');
+//         { property + '-left'   + postfix }: _.left   unquote('!important');
+//     } else {
+//         { property + '-top'    + postfix }: _.top;
+//         { property + '-right'  + postfix }: _.right;
+//         { property + '-bottom' + postfix }: _.bottom;
+//         { property + '-left'   + postfix }: _.left;
+//     }
+// }
+
+// -----------------------------------------------------------------------------
+// border shorthand to longhand
+// -----------------------------------------------------------------------------
+
+// -border-longhand(property, args) {
+//     _ = -border-values(args);
+//     if _.important {
+//         if _.initial {
+//             {property}: initial unquote('!important');
+//         } else if _.inherit {
+//             {property}: inherit unquote('!important');
+//         } else {
+//             if _.color != -longhand-defaults.border.color {
+//                 { property + '-color' }: _.color unquote('!important');
+//             }
+//             if _.style != -longhand-defaults.border.style {
+//                 { property + '-style' }: _.style unquote('!important');
+//             }
+//             if _.width != -longhand-defaults.border.width {
+//                 { property + '-width' }: _.width unquote('!important');
+//             }
+//         }
+//     } else {
+//         if _.initial {
+//             {property}: initial;
+//         } else if _.inherit {
+//             {property}: inherit;
+//         } else {
+//             if _.color != -longhand-defaults.border.color {
+//                 { property + '-color' }: _.color;
+//             }
+//             if _.style != -longhand-defaults.border.style {
+//                 { property + '-style' }: _.style;
+//             }
+//             if _.width != -longhand-defaults.border.width {
+//                 { property + '-width' }: _.width;
+//             }
+//         }
+//     }
+// }
+
+// -----------------------------------------------------------------------------
+// background shorthand to longhand
+// -----------------------------------------------------------------------------
+
+// -background-longhand(args) {
+//     _ = -background-values(args);
+//
+//     if _.length == 1 {
+//         if _.important {
+//             if _.color != -longhand-defaults.background.color {
+//                 background-color: _.color unquote('!important');
+//             }
+//             for prop, value in _.layers {
+//                 if value != -longhand-defualts.background[ prop ] {
+//                     { 'background-' + prop }: value unquote('!important');
+//                 }
+//             }
+//         } else {
+//             if _.color != -longhand-defaults.background.color {
+//                 background-color: _.color;
+//             }
+//             for prop, value in _.layers {
+//                 if value != -longhand-defaults.background[ prop ] {
+//                     { 'background-' + prop }: value;
+//                 }
+//             }
+//         }
+//     } else if _.length > 1 {
+//         _image      = null, null;
+//         _position   = null, null;
+//         _size       = null, null;
+//         _repeat     = null, null;
+//         _attachment = null, null;
+//         _origin     = null, null;
+//         _clip       = null, null;
+//
+//         for layer, index in _.layers {
+//             _image[index]      = layer.image;
+//             _position[index]   = layer.position;
+//             _size[index]       = layer.size;
+//             _repeat[index]     = layer.repeat;
+//             _attachment[index] = layer.attachment;
+//             _origin[index]     = layer.origin;
+//             _clip[index]       = layer.clip;
+//         }
+//
+//         if _.important {
+//             if _.color != -longhand-defaults.background.color {
+//                 background-color: _.color unquote('!important');
+//             }
+//             if !-every(_image, -longhand-defaults.background.image) {
+//                 background-image: _image unquote('!important');
+//             }
+//             if !-every(_position, -longhand-defaults.background.position) {
+//                 background-position: _position unquote('!important');
+//             }
+//             if !-every(_size, -longhand-defaults.background.size) {
+//                 background-size: _size unquote('!important');
+//             }
+//             if !-every(_repeat, -longhand-defaults.background.repeat) {
+//                 background-repeat: _repeat unquote('!important');
+//             }
+//             if !-every(_attachment, -longhand-defaults.background.attachment) {
+//                 background-attachment: _attachment unquote('!important');
+//             }
+//             if !-every(_origin, -longhand-defaults.background.origin) {
+//                 background-origin: _origin unquote('!important');
+//             }
+//             if !-every(_clip, -longhand-defaults.background.clip) {
+//                 background-clip: _clip unquote('!important');
+//             }
+//         } else {
+//             if _.color != -longhand-defaults.background.color {
+//                 background-color: _.color;
+//             }
+//             if !-every(_image, -longhand-defaults.background.image) {
+//                 background-image: _image;
+//             }
+//             if !-every(_position, -longhand-defaults.background.position) {
+//                 background-position: _position;
+//             }
+//             if !-every(_size, -longhand-defaults.background.size) {
+//                 background-size: _size;
+//             }
+//             if !-every(_repeat, -longhand-defaults.background.repeat) {
+//                 background-repeat: _repeat;
+//             }
+//             if !-every(_attachment, -longhand-defaults.background.attachment) {
+//                 background-attachment: _attachment;
+//             }
+//             if !-every(_origin, -longhand-defaults.background.origin) {
+//                 background-origin: _origin;
+//             }
+//             if !-every(_clip, -longhand-defaults.background.clip) {
+//                 background-clip: _clip;
+//             }
+//         }
+//     }
+// }
+
+// -----------------------------------------------------------------------------
+// margin
+// -----------------------------------------------------------------------------
+
+// margin(args...) {
+//     -around-longhand('margin', args);
+// }
+
+// -----------------------------------------------------------------------------
+// padding
+// -----------------------------------------------------------------------------
+
+// padding(args...) {
+//     -around-longhand('padding', args);
+// }
+
+// -----------------------------------------------------------------------------
+// border
+// -----------------------------------------------------------------------------
+
+// border(args...) {
+//     -border-longhand('border', args);
+// }
+//
+// border-top(args...) {
+//     -border-longhand('border-top', args);
+// }
+//
+// border-right(args...) {
+//     -border-longhand('border-right', args);
+// }
+//
+// border-bottom(args...) {
+//     -border-longhand('border-bottom', args);
+// }
+//
+// border-left(args...) {
+//     -border-longhand('border-left', args);
+// }
+
+// border-style(args...) {
+//   -around-longhand('border', args, 'style');
+// }
+//
+// border-width(args...) {
+//   -around-longhand('border', args, 'width');
+// }
+//
+// border-color(args...) {
+//   -around-longhand('border', args, 'color');
+// }
+
+// -----------------------------------------------------------------------------
+// background-image
+// -----------------------------------------------------------------------------
+
+// background-image() {
+//     img2 = null, null;
+//
+//     background-image: arguments;
+//     for image, index in arguments {
+//         done = false;
+//         if type(image) == 'call' {
+//             data = -string(image);
+//             if match('^call\s+url\(', data) {
+//                 unless match('^call\s+url\(\s*"?data:', data) or match("^call\s+url\(\s*'?data:", data) {
+//                     data = replace('(?:^call\s+url\(\s*|\s*\)$)', '', data);
+//                     data = replace('"', '', replace("['\s]+", '', data));
+//                     dir  = dirname(data);
+//                     ext  = extname(data);
+//                     name = basename(data, ext);
+//                     if image-size(pathjoin(name + '@2x' + ext), true)[0] {
+//                         img2[index] = url(pathjoin(dir, name + '@2x' + ext));
+//                         done = true;
+//                     }
+//                 }
+//             }
+//         }
+//         unless done {
+//             img2[index] = image;
+//         }
+//     }
+//
+//     if length(arguments) == 1 {
+//         pop(img2);
+//     }
+//
+//     if done {
+//         +retina() {
+//             background-image: img2;
+//         }
+//     }
+// }
+
+// -----------------------------------------------------------------------------
+// background-size
+// -----------------------------------------------------------------------------
+
+// background-size() {
+//     background-size: arguments;
+//     +retina() {
+//         background-size: arguments;
+//     }
+// }
+
+// -----------------------------------------------------------------------------
+// background-color
+// -----------------------------------------------------------------------------
+
+background-color(c) {
+    type = typeof(c);
+    if type in ('rgba' 'hsla') and alpha(c) < 1 {
+        a = alpha(c);
+        ms = argb(c, a);
+        background-color: rgba(c, a);
+        filter: s('progid:DXImageTransform.Microsoft.gradient(startColorstr=%s,endColorstr=%s)', ms, ms);
+        -ms-filter: s('"progid:DXImageTransform.Microsoft.gradient(startColorstr=%s,endColorstr=%s)"', ms, ms);
+        &:nth-child(n) {
+            filter: none;
+            -ms-filter: none;
+        }
+    } else {
+        background-color: c;
+    }
+}
+
+// -----------------------------------------------------------------------------
+// background
+// -----------------------------------------------------------------------------
+
+// background(args...) {
+//     -background-longhand(args);
+// }
+
+// -----------------------------------------------------------------------------
+// content
+// -----------------------------------------------------------------------------
+
+// content() {
+//     content: arguments;
+//     img2 = null;
+//     if length(arguments) == 1 {
+//         data = arguments[0];
+//         if type(data) == 'call' {
+//             data = -string(data);
+//             if match('^call\s+url\(', data) {
+//                 unless match('^call\s+url\(\s*"?data:', data) or match("^call\s+url\(\s*'?data:", data) {
+//                     data = replace('(?:^call\s+url\(\s*|s*\)$)', '', data);
+//                     data = replace('"', '', replace("['\s]+", '', data));
+//                     dir  = dirname(data);
+//                     ext  = extname(data);
+//                     name = basename(data, ext);
+//                     if image-size(pathjoin(name + '@2x' + ext), true)[0] {
+//                         img2 = url(pathjoin(dir, name + '@2x' + ext));
+//                     }
+//                 }
+//             }
+//         }
+//     }
+//     if img2 {
+//         +retina() {
+//             content: img2;
+//             transform: scale(0.5);
+//             transform-origin: 0 0;
+//         }
+//     }
+// }
+
+// -----------------------------------------------------------------------------
+// clearfix
+// -----------------------------------------------------------------------------
+
+$zone {
+    clear: fix;
+    overflow: hidden;
+    position: relative;
+}
+
+$clearfix {
+    &:before,
+    &:after {
+        content: '';
+        display: table;
+    }
+    &:after {
+        clear: both;
+    }
+}
+
+clear(value) {
+    if (value == fix or value == fixed) {
+        @extend $clearfix;
+        haslayout();
+    } else {
+        clear: value;
+    }
+}

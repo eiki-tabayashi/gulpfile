@@ -1,0 +1,272 @@
+{
+  "facebook": {
+    "defaults": {
+      "image": "global.png",
+      "width": "227px",
+      "height": "23px",
+      "top": "0px",
+      "left": "-277px"
+    }
+  },
+  "logo-m": {
+    "defaults": {
+      "image": "global.png",
+      "width": "272px",
+      "height": "56px",
+      "top": "0px",
+      "left": "0px"
+    }
+  },
+  "logo-s": {
+    "defaults": {
+      "image": "global.png",
+      "width": "199px",
+      "height": "41px",
+      "top": "-61px",
+      "left": "0px"
+    }
+  },
+  "menu-borrow-m--active": {
+    "defaults": {
+      "image": "global.png",
+      "width": "76px",
+      "height": "27px",
+      "top": "-175px",
+      "left": "-159px"
+    }
+  },
+  "menu-borrow-m": {
+    "defaults": {
+      "image": "global.png",
+      "width": "76px",
+      "height": "27px",
+      "top": "-207px",
+      "left": "-79px"
+    }
+  },
+  "menu-borrow-s--active": {
+    "defaults": {
+      "image": "global.png",
+      "width": "72px",
+      "height": "23px",
+      "top": "-28px",
+      "left": "-431px"
+    }
+  },
+  "menu-borrow-s": {
+    "defaults": {
+      "image": "global.png",
+      "width": "72px",
+      "height": "23px",
+      "top": "-84px",
+      "left": "-354px"
+    }
+  },
+  "menu-buy-m--active": {
+    "defaults": {
+      "image": "global.png",
+      "width": "77px",
+      "height": "27px",
+      "top": "-143px",
+      "left": "-80px"
+    }
+  },
+  "menu-buy-m": {
+    "defaults": {
+      "image": "global.png",
+      "width": "77px",
+      "height": "27px",
+      "top": "-143px",
+      "left": "-162px"
+    }
+  },
+  "menu-buy-s--active": {
+    "defaults": {
+      "image": "global.png",
+      "width": "72px",
+      "height": "23px",
+      "top": "-56px",
+      "left": "-277px"
+    }
+  },
+  "menu-buy-s": {
+    "defaults": {
+      "image": "global.png",
+      "width": "72px",
+      "height": "23px",
+      "top": "-84px",
+      "left": "-277px"
+    }
+  },
+  "menu-lend-m--active": {
+    "defaults": {
+      "image": "global.png",
+      "width": "75px",
+      "height": "27px",
+      "top": "-143px",
+      "left": "0px"
+    }
+  },
+  "menu-lend-m": {
+    "defaults": {
+      "image": "global.png",
+      "width": "75px",
+      "height": "27px",
+      "top": "-175px",
+      "left": "-79px"
+    }
+  },
+  "menu-lend-s--active": {
+    "defaults": {
+      "image": "global.png",
+      "width": "72px",
+      "height": "23px",
+      "top": "-28px",
+      "left": "-277px"
+    }
+  },
+  "menu-lend-s": {
+    "defaults": {
+      "image": "global.png",
+      "width": "72px",
+      "height": "23px",
+      "top": "-28px",
+      "left": "-354px"
+    }
+  },
+  "menu-sell-m--active": {
+    "defaults": {
+      "image": "global.png",
+      "width": "74px",
+      "height": "27px",
+      "top": "-175px",
+      "left": "0px"
+    }
+  },
+  "menu-sell-m": {
+    "defaults": {
+      "image": "global.png",
+      "width": "74px",
+      "height": "27px",
+      "top": "-207px",
+      "left": "0px"
+    }
+  },
+  "menu-sell-s--active": {
+    "defaults": {
+      "image": "global.png",
+      "width": "72px",
+      "height": "23px",
+      "top": "-56px",
+      "left": "-354px"
+    }
+  },
+  "menu-sell-s": {
+    "defaults": {
+      "image": "global.png",
+      "width": "72px",
+      "height": "23px",
+      "top": "-56px",
+      "left": "-431px"
+    }
+  },
+  "name-l": {
+    "defaults": {
+      "image": "global.png",
+      "width": "249px",
+      "height": "31px",
+      "top": "-107px",
+      "left": "0px"
+    }
+  },
+  "name-m": {
+    "defaults": {
+      "image": "global.png",
+      "width": "211px",
+      "height": "26px",
+      "top": "-239px",
+      "left": "0px"
+    }
+  },
+  "name-s": {
+    "defaults": {
+      "image": "global.png",
+      "width": "182px",
+      "height": "23px",
+      "top": "-112px",
+      "left": "-277px"
+    }
+  },
+  "name-xs": {
+    "defaults": {
+      "image": "global.png",
+      "width": "133px",
+      "height": "17px",
+      "top": "-270px",
+      "left": "-168px"
+    }
+  },
+  "phone-green": {
+    "defaults": {
+      "image": "global.png",
+      "width": "159px",
+      "height": "23px",
+      "top": "-168px",
+      "left": "-277px"
+    }
+  },
+  "phone-white": {
+    "defaults": {
+      "image": "global.png",
+      "width": "159px",
+      "height": "23px",
+      "top": "-140px",
+      "left": "-277px"
+    }
+  },
+  "quickaccess-form": {
+    "defaults": {
+      "image": "global.png",
+      "width": "114px",
+      "height": "17px",
+      "top": "-270px",
+      "left": "-306px"
+    }
+  },
+  "quickaccess-tel": {
+    "defaults": {
+      "image": "global.png",
+      "width": "139px",
+      "height": "17px",
+      "top": "-297px",
+      "left": "0px"
+    }
+  },
+  "useraction-fax": {
+    "defaults": {
+      "image": "global.png",
+      "width": "163px",
+      "height": "22px",
+      "top": "-196px",
+      "left": "-277px"
+    }
+  },
+  "useraction-form": {
+    "defaults": {
+      "image": "global.png",
+      "width": "210px",
+      "height": "22px",
+      "top": "-223px",
+      "left": "-277px"
+    }
+  },
+  "useraction-tel": {
+    "defaults": {
+      "image": "global.png",
+      "width": "163px",
+      "height": "22px",
+      "top": "-270px",
+      "left": "0px"
+    }
+  }
+}

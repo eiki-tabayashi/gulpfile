@@ -1,0 +1,40 @@
+@require 'vendors/normalize.css';
+
+h1 {
+    font-size: 100%;
+    margin: 0;
+}
+
+small {
+    font-size: 85%;
+}
+
+big {
+    font-size: 125%;
+}
+
+abbr[title],
+acronym[title] {
+    border-bottom: 1px dotted;
+    cursor: help;
+}
+
+legend {
+    white-space: normal;
+}
+
+input,
+textarea {
+    background-image: -webkit-linear-gradient(hsla(0,0%,100%,0), hsla(0,0%,100%,0)); /* Removing the inner shadow, rounded corners on iOS inputs */
+}
+
+img {
+    -ms-interpolation-mode: bicubic;
+    image-rendering: optimizeQuality;
+    display: inline-block;
+    border: 0;
+    font-size: 0;
+    line-height: 0;
+    vertical-align: top;
+    user-drag: none;
+}

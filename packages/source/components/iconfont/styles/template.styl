@@ -1,0 +1,25 @@
+@require "util/styles";
+font-face('<%= fontname %>');
+
+$--icons-<%= fontname %> ?= {};
+<% glyphs.forEach(function(glyph) { %>
+$--icons-<%= fontname %>['<%= glyph.name %>'] = '\<%= glyph.codepoint %>';
+<% }); %>
+
+icons-<%= fontname %>(-glyphname) {
+    -codepoint = $--icons-<%= fontname %>[-glyphname];
+    font-family: "<%= fontname %>";
+    font-style: normal;
+    font-variant: normal;
+    font-weight: normal;
+    speak: none;
+    text-decoration: none;
+    text-transform: none;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    *zoom: s("expression(this.runtimeStyle['zoom'] = '100%', this.innerHTML = %s)", -codepoint);
+    &:before {
+        content: -codepoint;
+        {block}
+    }
+}

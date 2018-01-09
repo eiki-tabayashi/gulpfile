@@ -1,0 +1,5 @@
+{
+  "classPrefix": "",
+  "options": [ "setClasses", "addTest" ],
+  "feature-detects": [ "test/css/mediaqueries" ]
+}

@@ -1,0 +1,61 @@
+@require "util/styles";
+font-face('icon');
+
+$--icons-icon ?= {};
+
+$--icons-icon['arrow-left'] = '\e001';
+
+$--icons-icon['arrow-right'] = '\e002';
+
+$--icons-icon['close'] = '\e003';
+
+$--icons-icon['config'] = '\e004';
+
+$--icons-icon['dot--active'] = '\e005';
+
+$--icons-icon['dot'] = '\e006';
+
+$--icons-icon['email'] = '\e007';
+
+$--icons-icon['facebook'] = '\e008';
+
+$--icons-icon['file'] = '\e009';
+
+$--icons-icon['image'] = '\e00a';
+
+$--icons-icon['info'] = '\e00b';
+
+$--icons-icon['map'] = '\e00c';
+
+$--icons-icon['phone'] = '\e00d';
+
+$--icons-icon['stamp-contract'] = '\e00e';
+
+$--icons-icon['stamp-new'] = '\e00f';
+
+$--icons-icon['stamp-pending'] = '\e010';
+
+$--icons-icon['topic'] = '\e011';
+
+$--icons-icon['triangle-bottom'] = '\e012';
+
+$--icons-icon['triangle-right'] = '\e013';
+
+
+icons-icon(-glyphname) {
+    -codepoint = $--icons-icon[-glyphname];
+    font-family: "icon";
+    font-style: normal;
+    font-variant: normal;
+    font-weight: normal;
+    speak: none;
+    text-decoration: none;
+    text-transform: none;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    *zoom: s("expression(this.runtimeStyle['zoom'] = '100%', this.innerHTML = %s)", -codepoint);
+    &:before {
+        content: -codepoint;
+        {block}
+    }
+}

@@ -1,0 +1,27 @@
+@require "device-all";
+media-retina();
+
+@media (min-width: 320px) {
+    @require "device-over-320";
+    media-retina();
+}
+
+@media (min-width: 480px) {
+    @require "device-over-480";
+    media-retina();
+}
+
+@media (min-width: 320px) and (max-width: 767px) {
+    @require "device-only-smartphone";
+    media-retina();
+}
+
+@media (min-width: 768px) {
+    @require "device-over-768";
+    media-retina();
+}
+
+@media (min-width: 1024px) {
+    @require "device-over-1024";
+    media-retina();
+}

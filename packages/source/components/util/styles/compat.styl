@@ -1,0 +1,85 @@
+support-for-ie ?= false;
+
+support-ie(version = null) {
+    if type(support-for-ie) == 'boolean' {
+        return support-for-ie;
+    }
+    if version == null {
+        return !!support-for-ie;
+    }
+    return version in support-for-ie;
+}
+
+is-ie-context(version = null) {
+    if !support-ie(version) {
+        return false;
+    }
+    if current-media() {
+        return false;
+    }
+    if match(':(before|after)', selector()) {
+        return false;
+    }
+    return true;
+}
+
+//! lte IE 7
+lte7(property, value...) {
+    if is-ie-context(7) {
+       *{property}: value;
+    }
+}
+
+//! lte IE 6
+lte6(property, value...) {
+    if is-ie-context(6) {
+        _{property}: value;
+    }
+}
+
+haslayout() {
+    lte7(zoom, 100%) unless @zoom;
+}
+
+opacity(value) {
+    haslayout();
+    filter: s('alpha(opacity=%s)', value * 100);
+    opacity: value;
+}
+
+display(value) {
+    display: value;
+    if value is inline-block {
+        haslayout();
+        lte7(display, inline);
+        lte7(vertical-align, top) unless @vertical-align;
+        lte6(height, @min-height) if @min-height;
+    }
+}
+
+// float(value) {
+//   float: value;
+//   if is-ie-context(6) {
+//     if value == left {
+//       if @margin-left {
+//         p('double margin occurred. fix.');
+//         lte6(display, inline);
+//       }
+//     } else if value == right {
+//       if @margin-right {
+//         lte6(display, inline);
+//       }
+//     }
+//   }
+// }
+
+text-overflow(value) {
+    text-overflow: value;
+    if is-ie-context(6) {
+        if value == ellipsis {
+            lte6(width, 100%) unless @width;
+            lte6(white-space, nowrap) if @white-space != nowrap;
+            lte6(overflow, hidden) if @overflow != hidden;
+        }
+    }
+}

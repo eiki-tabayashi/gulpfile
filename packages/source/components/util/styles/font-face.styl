@@ -1,0 +1,37 @@
+--font-defaults ?= {
+    URL: '../fonts'
+};
+
+--fonts-URL ?= {};
+set-fonts-URL(-fonts-URL) {
+    --fonts-URL['current'] = -fonts-URL;
+}
+
+get-fonts-URL() {
+    return --fonts-URL['current'] ? --fonts-URL['current'] : --font-defaults.URL;
+}
+
+font-face(-family, -basename = -family, -weight = normal, -hack = false) {
+    -fonts-URL = get-fonts-URL();
+    @font-face {
+        font-family: -family;
+        src: url( pathjoin(-fonts-URL, -basename + ".eot"));
+        src: url( pathjoin(-fonts-URL, -basename + ".eot?#iefix")) format('eot'),
+        url( pathjoin(-fonts-URL, -basename + ".woff")) format('woff'),
+        url( pathjoin(-fonts-URL, -basename + ".ttf")) format('truetype'),
+        url( pathjoin(-fonts-URL, -basename + ".svg#" + -family)) format('svg');
+        font-style: normal;
+        font-weight: -weight;
+    }
+
+    if -hack {
+        @media screen and (-webkit-min-device-pixel-ratio:0) {
+            @font-face {
+                font-family: -family;
+                src: url(pathjoin(-fonts-URL, -basename + ".svg#" + -family)), format('svg');
+                font-style: normal;
+                font-weight: -weight;
+            }
+        }
+    }
+}

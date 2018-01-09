@@ -1,0 +1,17 @@
+@require "webfont";
+
+font-family = Courier, "ヒラギノ角ゴ Pro W3", "Hiragino Kaku Gothic Pro", "メイリオ", Meiryo, Osaka, "ＭＳ Ｐゴシック", "MS PGothic", sans-serif;
+$font-family {
+  font-family: font-family;
+}
+
+$font-family--prominence {
+  font-family: font-family;
+  /.wf-logotypegothic-n4-active & {
+    font-family: LogoTypeGothic, font-family;
+  }
+}
+
+p {
+    @extend $font-family--prominence;
+}

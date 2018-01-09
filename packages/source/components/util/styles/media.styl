@@ -1,0 +1,266 @@
+mediaURL ?= '../media';
+dataURL  ?= url;
+
+$image {
+    -ms-interpolation-mode: bicubic;
+    image-rendering: optimizeQuality;
+    display: inline-block;
+    border: 0;
+    font-size: 0;
+    line-height: 0;
+    vertical-align: top;
+    user-drag: none;
+}
+
+--image() {
+    -ms-interpolation-mode: bicubic;
+    image-rendering: optimizeQuality;
+    display: inline-block;
+    border: 0;
+    font-size: 0;
+    line-height: 0;
+    vertical-align: top;
+    user-drag: none;
+}
+
+$image--fluid {
+    @extend $image;
+    max-width: 100%;
+    lte7(width, 100%);
+    height: auto;
+}
+
+--image--fluid() {
+    --image();
+    max-width: 100%;
+    lte7(width, 100%);
+    height: auto;
+}
+
+$sprite {
+    display: block;
+    overflow: hidden;
+}
+
+// [TODO] mend mediaURL automatically
+// media(filename) {
+//     return url(pathjoin(mediaURL, filename));
+// }
+
+// [TODO] mend hard coded srtings: 'media'
+data(filename) {
+    return dataURL(pathjoin('media', basename(filename)));
+}
+
+retina() {
+    @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+        {block}
+    }
+}
+
+media(-filename, -retina-filename = '') {
+    -selector = selector();
+    if -retina-filename != '' {
+        set-media-buffer(-selector, -retina-filename);
+    }
+    return url(pathjoin(mediaURL, -filename));
+}
+
+--media-buffer ?= {};
+
+set-media-buffer(-selector, -filename, -maybe-ns-current = '') {
+    -ns-current = get-ns-current(-maybe-ns-current);
+    unless -ns-current in --media-buffer {
+        --media-buffer[-ns-current] = ();
+    }
+    push(--media-buffer[-ns-current], -selector);
+    push(--media-buffer[-ns-current], -filename);
+}
+
+dump-media-buffer(-maybe-ns-current = '', -ratio = 2, -min = 192dpi) {
+    -ns-current   = get-ns-current(-maybe-ns-current);
+    -media-buffer = --media-buffer[-ns-current];
+
+    -keys = ();
+    -values = ();
+    for -value, -index in -media-buffer {
+        -res = -index % 2;
+        if -res == 1 {
+            push(-values, -value);
+        } else {
+            push(-keys, -value);
+        }
+    }
+
+    @media (-webkit-min-device-pixel-ratio: -ratio), (min-resolution: -min) {
+        for -key, -index in -keys {
+            { -key } {
+                background-image: url(pathjoin(mediaURL, -values[-index]));
+            }
+        }
+    }
+
+    --media-buffer[-ns-current] = ();
+}
+
+media-retina(-maybe-ns-current = '', -ratio = 2, -min = 192dpi) {
+    dump-media-buffer(-maybe-ns-current, -ratio, -min);
+}
+
+
+--set-media-retina(-basename, -selector) {
+    unless -basename in --media-retina-cache {
+        --media-retina-cache[-basename] = {};
+    }
+    --media-retina-cache[-basename][-selector] = 1;
+}
+
+--get-media-retina(-basename) {
+    unless -basename in --media-retina-cache {
+        return ();
+    }
+    return keys(--media-retina-cache[-basename]);
+}
+
+--sprite-retina-cache ?= {};
+sprite-retina(-basename, -ratio = 2, -min = 192dpi, -postfix = '@2x', -extname = '.png') {
+    // unless -basename in --sprite-retina-cache {
+    //     warn('Retina cache not found: ' + -basename + '.');
+    //     return;
+    // }
+
+    unless match('^\.', -extname) {
+        -extname = '.' + -extname;
+    }
+
+    -selector = join(',', --get-sprite-retina(-basename));
+
+    if -selector == '' {
+        warn('Retina cache doesnt exists: ' + -basename);
+        return;
+    }
+
+    @media (-webkit-min-device-pixel-ratio: -ratio), (min-resolution: -min) {
+        {-selector} {
+            content: media(-basename + -postfix + -extname);
+            transform: scale(0.5);
+            transform-origin: 0 0;
+            {block}
+        }
+    }
+    --sprite-retina-cache[-basename] = {};
+}
+
+--set-sprite-retina(-basename, -selector) {
+    unless -basename in --sprite-retina-cache {
+        --sprite-retina-cache[-basename] = {};
+    }
+    --sprite-retina-cache[-basename][-selector] = 1;
+}
+
+--get-sprite-retina(-basename) {
+    unless -basename in --sprite-retina-cache {
+        return ();
+    }
+    return keys(--sprite-retina-cache[-basename]);
+}
+
+--current-sprite-cache ?= {};
+set-current-sprite(-basename) {
+    --current-sprite-cache['current'] = -basename;
+}
+
+--get-current-sprite(-basename = '') {
+    -current = -basename;
+    if -current == '' {
+        -current = --current-sprite-cache['current'];
+    }
+    if -current == '' {
+        error('Sprite basename not defined.');
+    }
+    return -current;
+}
+
+--sprite-cache ?= {};
+sprite(-name, -basename = '', -extname = '.png', -dirname = 'sprites') {
+    -basename = --get-current-sprite(-basename);
+
+    unless match('^\.', -extname) {
+        -extname = '.' + -extname;
+    }
+
+    unless -basename in --sprite-cache {
+        --sprite-cache[-basename] = json(pathjoin(-dirname, -basename + '.json'), { hash: true });
+    }
+    unless -name in --sprite-cache[-basename] {
+        error('Sprite name ' + -name + ' not found.');
+    }
+
+    -data     = --sprite-cache[-basename];
+    -object   = -data[-name];
+    -states   = keys(-object);
+    -state    = -states[0];
+    -filename = -basename + -extname;
+
+    position: relative;
+    display: inline-block;
+    overflow: hidden;
+    width: -object[-state].width;
+    height: -object[-state].height;
+    line-height: @height;
+    &:before {
+        position: relative;
+        --image();
+        content: media(-filename);
+        --set-sprite-retina(-basename, selector());
+        top: -object.defaults.top;
+        left: -object.defaults.left;
+    }
+}
+
+frame-image(-width, -height, -background = none) {
+    position: relative;
+    width: -width;
+    height: -height;
+    overflow: hidden;
+    background: -background;
+
+    &-frame {
+        position: absolute;
+        width: -width;
+        height: -height * 2;
+        top: - ((-height * 2) / 4);
+        left: 0px;
+    }
+
+    &-object {
+        position: absolute;
+        top: 0px;
+        bottom: 0px;
+        margin: auto;
+        width: -width;
+        height: auto;
+    }
+}
+
+fullheight-frame-image(-width, -height, -background = none) {
+    position: relative;
+    width: -width;
+    height: -height;
+    overflow: hidden;
+    background: -background;
+
+    &-frame {
+        position: absolute;
+        width: -width * 2;
+        height: -height;
+        top: 0px;
+        left: - ((-width * 2) / 4);
+        text-align: center;
+    }
+
+    &-object {
+        width: auto;
+        height: -height;
+    }
+}
